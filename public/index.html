@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VTuber AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VTuber AI</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<!-- index.html – make sure these are in this order -->
-<canvas id="avatarCanvas" width="512" height="512"></canvas>
+  <canvas id="avatarCanvas" width="512" height="512"></canvas>
 
-<script src="/libs/live2d.min.js"></script>
+<!-- Pixi renderer -->
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@7/dist/browser/pixi.min.js"></script>
+
+<!-- Cubism runtime wrapped by pixi-live2d-display (≈1.6 MB, correct MIME) -->
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@6/dist/pixi-live2d-display.min.js"></script>
+
+<!-- your loader -->
 <script type="module" src="/js/avatar.js"></script>
 
   <div id="chat-container">
@@ -20,9 +25,5 @@
       <button type="submit">Send</button>
     </form>
   </div>
-
-  <script src="libs/live2d.min.js"></script>
-  <script type="module" src="js/avatar.js"></script>
-  <script type="module" src="js/chat.js"></script>
 </body>
 </html>
