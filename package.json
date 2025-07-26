@@ -1,0 +1,14 @@
+{
+  "name": "vtuber-ai",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/server.js",
+    "build": "echo \"(nothing to build yet)\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  }
+}
