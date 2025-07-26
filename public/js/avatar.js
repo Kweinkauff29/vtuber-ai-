@@ -1,43 +1,49 @@
-// Phase 2 – Live2D loader & basic lip‑sync (volume‑based)
-import { Live2DCubismFramework as cubism } from "../libs/live2d.min.js";
+// avatar.js – minimal loader + your lip-sync
 
-const canvas = document.getElementById("avatar-canvas");
-let model, audioAnalyser, audioCtx;
+// The script tag loaded Live2D already; pull the class off the global
+const { Live2DModel } = window;            // comes from live2d.min.js
 
-(async function init() {
-  await cubism.CubismFramework.startUp();
-  await cubism.CubismFramework.initialize();
+const canvas = document.getElementById("avatarCanvas");
+let model, audioAnalyser;
 
-  // Load model JSON (change file name if you use a different avatar)
-  const modelJsonUrl = "/assets/model/model.json";
-  const { Live2DModelWebGL } = await cubism.CubismModel.load(canvas, modelJsonUrl);
-  model = Live2DModelWebGL;
+// ---------- Load Kei ----------
+(async () => {
+  model = await Live2DModel.from("/assets/model/kei_en/Kei.model3.json");
+
+  model.setTextureFlipY(false);            // WebGL coordinate fix
+  model.scale = 2.0;                       // zoom
+  model.x = 0;                             // centre
+  model.y = -0.2;
+
   startRenderLoop();
 })();
 
+// ---------- Render & lip-sync ----------
 function startRenderLoop() {
   requestAnimationFrame(startRenderLoop);
   if (!model) return;
 
-  // Idle breathing animation (simple sine‑wave on angleY)
+  // idle sway
   const t = performance.now() / 1000;
-  model.setParameterValueById("ParamAngleY", Math.sin(t) * 10);
+  model.internalModel.parameters.setValueById(
+    "ParamAngleY",
+    Math.sin(t) * 10
+  );
 
-  // Lip‑sync based on audio volume
+  // mouth from mic/tts volume
   if (audioAnalyser) {
     const data = new Uint8Array(audioAnalyser.fftSize);
     audioAnalyser.getByteTimeDomainData(data);
-    const amp = Math.max(...data) - 128; // crude amplitude
-    const mouth = Math.min(1, amp / 50);
-    model.setParameterValueById("ParamMouthOpenY", mouth);
+    const amp  = Math.max(...data) - 128;       // 0-127
+    const open = Math.min(1, amp / 50);
+    model.internalModel.parameters.setValueById("ParamMouthOpenY", open);
   }
 
   model.update();
-  model.draw(canvas.getContext("webgl"));
+  model.draw(canvas.getContext("webgl", { premultipliedAlpha: true }));
 }
 
-// Expose hook to chat.js so it can pass AudioContext when TTS is implemented
-export function attachAudio(analyserNode, audioContext) {
+// called by chat.js once it creates an analyser
+export function attachAudio(analyserNode) {
   audioAnalyser = analyserNode;
-  audioCtx = audioContext;
 }

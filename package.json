@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "kokoro-js": "^1.2.1",
     "node-fetch": "^3.3.2",
-    "dotenv": "^16.4.5"
+    "wavefile": "^11.0.0"
   }
 }

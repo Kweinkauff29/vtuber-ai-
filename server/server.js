@@ -2,6 +2,8 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 import { config } from "dotenv";
+import { synth } from "./tts.js";
+
 config();
 
 const app = express();
@@ -14,33 +16,30 @@ const LLM_ENDPOINT = process.env.LLM_ENDPOINT ?? "http://localhost:8000/v1/chat/
 const MODEL_NAME   = process.env.LLM_MODEL    ?? "Qwen3-8B-Instruct";
 
 app.post("/api/chat", async (req, res) => {
-  js\nif (process.env.ECHO) return res.json({ content: messages.at(-1).content + \" (echo)\" });\n
-  
+  if (process.env.ECHO) {
+    const { messages = [] } = req.body;
+    const content = (messages.at(-1)?.content || "") + " (echo)";
+    const audioBuf = await synth(content);   // ← generate voice even for echo mode
+    const audioB64 = audioBuf.toString("base64");
+    return res.json({ content, audioB64 });
+  }
+
   try {
     const { messages } = req.body;
-
-    const body = {
-      model: MODEL_NAME,
-      messages,
-      temperature: 0.8,
-      max_tokens: 512,
-      stream: false
-    };
-
-    const llmRes = await fetch(LLM_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-
-    const data = await llmRes.json();
+    // … fetch LLM reply exactly as before …
     const content = data?.choices?.[0]?.message?.content ?? "(no reply)";
-    res.json({ content });
+
+    // NEW: synthesize speech
+    const audioBuf = await synth(content);
+    const audioB64 = audioBuf.toString("base64");
+
+    res.json({ content, audioB64 });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "LLM backend error" });
   }
 });
+
 
 const PORT = process.env.PORT ?? 3000;
 app.listen(PORT, () => console.log(`⚡  Server running at http://localhost:${PORT}`));

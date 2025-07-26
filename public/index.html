@@ -7,7 +7,11 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <canvas id="avatar-canvas"></canvas>
+<!-- index.html – make sure these are in this order -->
+<canvas id="avatarCanvas" width="512" height="512"></canvas>
+
+<script src="/libs/live2d.min.js"></script>
+<script type="module" src="/js/avatar.js"></script>
 
   <div id="chat-container">
     <div id="messages"></div>
