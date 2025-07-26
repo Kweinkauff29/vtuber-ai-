@@ -14,6 +14,8 @@ const LLM_ENDPOINT = process.env.LLM_ENDPOINT ?? "http://localhost:8000/v1/chat/
 const MODEL_NAME   = process.env.LLM_MODEL    ?? "Qwen3-8B-Instruct";
 
 app.post("/api/chat", async (req, res) => {
+  js\nif (process.env.ECHO) return res.json({ content: messages.at(-1).content + \" (echo)\" });\n
+  
   try {
     const { messages } = req.body;
 
