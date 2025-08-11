@@ -15,11 +15,10 @@ body {
   background: transparent;
 }
 
-#chat-container {
-  width: 480px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+#chat-container{
+  position:absolute; left:16px; bottom:16px;
+  width:min(520px, 42vw); max-height:48vh; overflow:auto;
+  padding:10px 12px; background:rgba(0,0,0,.55); border-radius:12px;
 }
 
 #messages {
@@ -31,6 +30,7 @@ body {
 #messages .user {
   text-align: right;
   margin: 4px 0;
+  white-space:pre-wrap; margin:6px 0;
 }
 
 #messages .bot {

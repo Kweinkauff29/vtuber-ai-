@@ -6,7 +6,6 @@ const chatForm    = document.getElementById("chat-form");
 const chatInput   = document.getElementById("chat-input");
 
 let history = [
-  { role: "system", content: "You are ZanyBot, a chaotic VTuber. Stay PG-13 and witty." }
 ];
 
 let audioCtx, analyser;
