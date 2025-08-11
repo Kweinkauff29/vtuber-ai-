@@ -196,3 +196,9 @@ app.post("/api/chat", async (req, res) => {
     res.status(200).json({ content: `[dev echo] ${echo}`, audioB64: null, error: String(e?.message || e) });
   }
 });
+
+// ---- Boot ---------------------------------------------------------------
+const PORT = process.env.PORT ?? 3000;
+app.listen(PORT, () => {
+  console.log(`⚡ http://localhost:${PORT}`);
+});
