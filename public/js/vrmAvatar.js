@@ -30,20 +30,36 @@ export function attachAudio(an) { analyser = an; }
 const loader = new GLTFLoader();
 loader.register((parser) => new VRMLoaderPlugin(parser));
 
-loader.load(
-  "/assets/vrm/AliciaSolid.vrm",
-  (gltf) => {
-    vrm = gltf.userData.vrm;
-    // tidy for performance
-    VRMUtils.removeUnnecessaryVertices(gltf.scene);
-    VRMUtils.removeUnnecessaryJoints(gltf.scene);
-    vrm.scene.rotation.y = Math.PI;   // face the camera
-    vrm.scene.position.set(0, 0, 0);
-    scene.add(vrm.scene);
-  },
-  undefined,
-  (e) => console.error("VRM load error (is the file at /assets/vrm/AliciaSolid.vrm ?):", e)
-);
+const modelUrl = "/assets/vrm/AliciaSolid.vrm?v=3";
+
+(async () => {
+  try {
+    const res = await fetch(modelUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const arrayBuffer = await res.arrayBuffer();
+
+    // (Optional) sanity log
+    const magic = new Uint8Array(arrayBuffer, 0, 4);
+    console.log('VRM magic:', magic, String.fromCharCode(...magic));
+
+    // Parse the binary directly
+    loader.parse(
+      arrayBuffer,
+      '', // path (unused for .vrm)
+      (gltf) => {
+        const v = gltf.userData.vrm;
+        VRMUtils.removeUnnecessaryVertices(gltf.scene);
+        VRMUtils.removeUnnecessaryJoints(gltf.scene);
+        v.scene.rotation.y = Math.PI;
+        scene.add(v.scene);
+        vrm = v;
+      },
+      (err) => console.error('GLTF parse error:', err)
+    );
+  } catch (e) {
+    console.error('VRM fetch error:', e);
+  }
+})();
 
 const clock = new THREE.Clock();
 function animate() {

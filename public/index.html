@@ -1,14 +1,33 @@
-<body>
-  <canvas id="avatarCanvas" width="512" height="512"></canvas>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>VTuber AI</title>
 
-  <div id="chat-container">
-    <div id="messages"></div>
-    <form id="chat-form">
-      <input id="chat-input" autocomplete="off" placeholder="Say something…" />
-      <button type="submit">Send</button>
-    </form>
-  </div>
+    <!-- Map bare "three" imports -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+    </script>
 
-  <script type="module" src="/js/vrmAvatar.js"></script>
-  <script type="module" src="/js/chat.js"></script>
-</body>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <canvas id="avatarCanvas" width="512" height="512"></canvas>
+
+    <div id="chat-container">
+      <div id="messages"></div>
+      <form id="chat-form">
+        <input id="chat-input" placeholder="Say something…" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <script type="module" src="/js/vrmAvatar.js"></script>
+    <script type="module" src="/js/chat.js"></script>
+  </body>
+</html>
