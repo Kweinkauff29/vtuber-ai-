@@ -1,4 +1,4 @@
-// server/tts.js   ← make sure your local file matches **exactly**
+// server/tts.js
 import { KokoroTTS } from "kokoro-js";
 import WaveFilePkg from "wavefile";
 const { WaveFile } = WaveFilePkg;
@@ -14,22 +14,19 @@ function floatToInt16(float32) {
   return int16;
 }
 
-export async function synth(text, voice = "af_bella") {
+export async function synth(text, voice = "af_heart") {
   if (!tts) {
-    tts = await KokoroTTS.from_pretrained(
-      "onnx-community/Kokoro-82M-v1.0-ONNX",
+    // engine: "onnx", model: small English, quantized on CPU
+    tts = await KokoroTTS.fromPretrained("onnx", "kokoro-small-en",
       { dtype: "q8", device: "cpu" }
     );
   }
-
-  const result = await tts.generate(text, { voice });
-  const floats     = result.audio ?? result.samples ?? result;   // <- HERE
-  const sampleRate = result.sampleRate ?? 24_000;
+  const result = await tts.generate(text, { voice }); // returns Float32Array + sampleRate
+  const floats     = result.audio ?? result.samples ?? result;
+  const sampleRate = result.sampleRate ?? 24000;
 
   const int16 = floatToInt16(floats);
-
   const wav = new WaveFile();
   wav.fromScratch(1, sampleRate, "16", int16);
-
   return Buffer.from(wav.toBuffer());
 }

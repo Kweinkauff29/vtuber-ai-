@@ -9,21 +9,8 @@
 <body>
   <canvas id="avatarCanvas" width="512" height="512"></canvas>
 
-<!-- Pixi renderer -->
-<script src="https://cdn.jsdelivr.net/npm/pixi.js@7/dist/browser/pixi.min.js"></script>
-
-<!-- Cubism runtime wrapped by pixi-live2d-display (≈1.6 MB, correct MIME) -->
-<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@6/dist/pixi-live2d-display.min.js"></script>
-
-<!-- your loader -->
-<script type="module" src="/js/avatar.js"></script>
-
-  <div id="chat-container">
-    <div id="messages"></div>
-    <form id="chat-form">
-      <input id="chat-input" autocomplete="off" placeholder="Say something…" />
-      <button type="submit">Send</button>
-    </form>
-  </div>
+  <!-- Three.js + VRM -->
+  <script type="module" src="/js/vrmAvatar.js"></script>
+  <script type="module" src="/js/chat.js"></script>
 </body>
 </html>

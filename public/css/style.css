@@ -9,7 +9,7 @@ body {
   height: 100vh;
 }
 
-#avatar-canvas {
+#avatarCanvas {
   width: 480px;
   height: 720px;
   background: transparent;
