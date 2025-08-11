@@ -2,10 +2,7 @@
   "name": "vtuber-ai",
   "version": "0.1.0",
   "type": "module",
-  "scripts": {
-    "dev": "node server/server.js",
-    "build": "echo \"(nothing to build yet)\""
-  },
+  "scripts": { "dev": "node server/server.js", "build": "echo \"(nothing to build yet)\"" },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -13,5 +10,8 @@
     "kokoro-js": "^1.2.1",
     "node-fetch": "^3.3.2",
     "wavefile": "^11.0.0"
+  },
+  "overrides": {
+    "sharp": "0.32.6"
   }
 }

@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VTuber AI</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
 <body>
   <canvas id="avatarCanvas" width="512" height="512"></canvas>
 
-  <!-- Three.js + VRM -->
+  <div id="chat-container">
+    <div id="messages"></div>
+    <form id="chat-form">
+      <input id="chat-input" autocomplete="off" placeholder="Say something…" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
   <script type="module" src="/js/vrmAvatar.js"></script>
   <script type="module" src="/js/chat.js"></script>
 </body>
-</html>
