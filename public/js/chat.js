@@ -5,8 +5,7 @@ const messagesDiv = document.getElementById("messages");
 const chatForm    = document.getElementById("chat-form");
 const chatInput   = document.getElementById("chat-input");
 
-let history = [
-];
+let history = [];
 
 let audioCtx, analyser;
 function ensureAudio() {
@@ -20,7 +19,7 @@ function ensureAudio() {
 
 function addMessage(role, text) {
   const bubble = document.createElement("div");
-  bubble.className = role;
+  bubble.className = role; // "user" or "bot" for UI only
   bubble.textContent = text;
   messagesDiv.appendChild(bubble);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -30,8 +29,11 @@ chatForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const user = chatInput.value.trim();
   if (!user) return;
+
   chatInput.value = "";
   addMessage("user", user);
+
+  // history for LLM: roles must be "user"/"assistant" only
   history.push({ role: "user", content: user });
 
   const typing = document.createElement("div");
@@ -40,28 +42,55 @@ chatForm?.addEventListener("submit", async (e) => {
   messagesDiv.appendChild(typing);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-  const r = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: history })
-  });
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        // send only role + content, never blobs or extra fields
+        messages: history.map(m => ({ role: m.role, content: String(m.content) }))
+      })
+    });
 
-  const { content, audioB64, error } = await r.json();
-  typing.remove();
-  if (error) return addMessage("bot", `Error: ${error}`);
+    const { content, audioB64, error } = await res.json();
 
-  addMessage("bot", content);
-  history.push({ role: "assistant", content });
+    typing.remove();
 
-  if (audioB64) {
-    ensureAudio();
-    const buf = Uint8Array.from(atob(audioB64), c => c.charCodeAt(0));
-    const blob = new Blob([buf], { type: "audio/wav" });
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    const source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    source.connect(audioCtx.destination);
-    audio.play();
+    if (error) {
+      addMessage("bot", `Error: ${error}`);
+      return;
+    }
+
+    addMessage("bot", content);
+
+    // push ONLY assistant text to convo history
+    history.push({ role: "assistant", content });
+
+    if (audioB64) {
+      ensureAudio();
+
+      // convert base64 -> wav blob
+      const binary = atob(audioB64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const blob = new Blob([bytes], { type: "audio/wav" });
+      const url = URL.createObjectURL(blob);
+
+      const audio = new Audio(url);
+      const source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      source.connect(audioCtx.destination);
+
+      try { await audioCtx.resume(); } catch {}
+
+      audio.play().catch(() => {});
+      audio.onended = () => {
+        try { source.disconnect(); } catch {}
+        URL.revokeObjectURL(url);
+      };
+    }
+  } catch (err) {
+    typing.remove();
+    addMessage("bot", `Error: ${err?.message || err}`);
   }
 });
